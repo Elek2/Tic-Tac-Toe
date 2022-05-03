@@ -1,0 +1,59 @@
+# User input to field number transition
+def change(x):
+	return (int(x.split()[0]) - 1) * 3 + int(x.split()[1]) - 1
+
+
+# Print a field
+def field(enter):
+	print("---------")
+	print("|", enter[0], enter[1], enter[2], "|", sep=" ")
+	print("|", enter[3], enter[4], enter[5], "|", sep=" ")
+	print("|", enter[6], enter[7], enter[8], "|", sep=" ")
+	print("---------")
+
+
+# Check ranks, files and diagonals for 3 in a row
+def win_check(first):
+	for i in [0, 3, 6]:
+		if first[i] == first[i + 1] == first[i + 2] and first[i] != " ":
+			return first[i]
+	for i in [0, 1, 2]:
+		if first[i] == first[i + 3] == first[i + 6] and first[i] != " ":
+			return first[i]
+	if ((first[0] == first[4] == first[8] or
+		first[2] == first[4] == first[6]) and first[4] != " "):
+		return first[4]
+
+
+def main_game():
+	turn = " " * 9
+	field(turn)  # Print a new field
+	order = ["X", "O"]  # for changing the order in future
+	while True:
+		new_turn = input("Enter the coordinates: ")
+		#  Error Checking
+		if not new_turn.replace(" ", "").isnumeric():
+			print("You should enter numbers in format: digit whitespace digit")
+		elif len(new_turn.split()) < 2:
+			print("You should enter numbers in format: digit whitespace digit")
+		elif not all(0 < _ < 4 for _ in list(map(int, new_turn.split()))):
+			print("Coordinates should be from 1 to 3!")
+		elif turn[change(new_turn)] in order:
+			print("This cell is occupied! Choose another one!")
+		#  Main turn
+		else:
+			turn = turn[:change(new_turn)] + order[0] + turn[change(new_turn) + 1:]
+			field(turn)  # Make and print a new field with your turn
+			if win_check(turn):
+				print(f"{order[0]} wins")
+				break
+			elif len(turn.replace(" ", "")) == 9:
+				print("Draw")
+				break
+			order.reverse()  # Changing the order
+
+
+main_game()
+
+if input("\nWant a new game (y/n): ") == "y":
+	main_game()
